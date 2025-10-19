@@ -11,9 +11,10 @@ pipeline {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/jihedafli/StudentManagement',
-                    credentialsId: 'Jenkins'
+                    credentialsId: ''
             }
         }
+
 
         stage('Clean and Build Project') {
             steps {
