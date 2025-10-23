@@ -33,10 +33,20 @@ pipeline {
         stage("Build Docker image") {
             steps {
                 script {
-                    sh "docker build -t Student-app:latest ."
+                    sh "docker build -t Student-management:alpine ."
                 }
             }
         }
+
+
+        stage('SonarQube') {
+          steps {
+            withSonarQubeEnv('MySonar') {
+              sh 'mvn -B sonar:sonar -Dsonar.projectKey=student-management -Dsonar.projectName="Student Management"'
+            }
+          } .
+        }
+
 
 
         stage("Start app and db") {
