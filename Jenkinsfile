@@ -43,7 +43,7 @@ pipeline {
           # use lowercase repo/tag names
           docker build -t $DOCKER_USER_USR/student-management:alpine .
           # To push later, uncomment:
-          # docker push $DOCKER_USER_USR/student-management:alpine
+           docker push $DOCKER_USER_USR/student-management:alpine
         '''
       }
     }
