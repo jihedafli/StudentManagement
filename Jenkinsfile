@@ -25,7 +25,7 @@ pipeline {
      steps {
        sh '''
          mvn -B sonar:sonar \
-           -Dsonar.projectKey=student-management \
+           -Dsonar.projectKey=Student-Management \
            -Dsonar.projectName="Student Management" \
            -Dsonar.host.url=http://192.168.33.10:9000 \
            -Dsonar.token=${SONARQUBE_CREDENTIALS}
