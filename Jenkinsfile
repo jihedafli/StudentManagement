@@ -21,17 +21,18 @@ pipeline {
       }
     }
 
-    stage('SonarQube Analysis') {
-      steps {
-        sh '''
-          mvn -B sonar:sonar \
-            -Dsonar.projectKey=student-management \
-            -Dsonar.projectName="Student Management" \
-            -Dsonar.host.url=http://192.168.33.10:9000 \
-            -Dsonar.login=${SONARQUBE_CREDENTIALS}
-        '''
-      }
-    }
+   stage('SonarQube Analysis') {
+     steps {
+       sh '''
+         mvn -B sonar:sonar \
+           -Dsonar.projectKey=student-management \
+           -Dsonar.projectName="Student Management" \
+           -Dsonar.host.url=http://192.168.33.10:9000 \
+           -Dsonar.token=${SONARQUBE_CREDENTIALS}
+       '''
+     }
+   }
+
 
     stage('Build Docker image') {
       steps {
