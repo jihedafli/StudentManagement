@@ -44,7 +44,7 @@ pipeline {
             withSonarQubeEnv('MySonar') {
               sh 'mvn -B sonar:sonar -Dsonar.projectKey=student-management -Dsonar.projectName="Student Management"'
             }
-          } .
+          }
         }
 
 
