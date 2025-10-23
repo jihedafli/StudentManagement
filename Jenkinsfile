@@ -1,58 +1,58 @@
 pipeline {
     agent any
+
+
     environment {
         DOCKER_USER = credentials('dockerhub-credentials')
-
-
-
+        SONARQUBE_CREDENTIALS = credentials('studentmanagement')
     }
+
     stages {
         stage('Checkout GitHub Repository') {
             steps {
+
                 git branch: 'main',
-                    url: 'https://github.com/jihedafli/StudentManagement',
-                    credentialsId: ''
+                    url: 'https://github.com/jihedafli/StudentManagement'
             }
         }
-
 
         stage('Clean and Build Project') {
             steps {
-                script {
-                    echo 'Cleaning the project...'
-                    sh 'mvn clean'
-
-                    echo 'Building the project...'
-                    sh 'mvn package -DskipTests'
-                }
+                sh 'mvn -B clean'
+                sh 'mvn -B package -DskipTests'
             }
         }
 
-
-
-        stage("Build Docker image") {
+        stage('Build Docker image (local)') {
             steps {
-                script {
-                    sh "docker build -t Student-management:alpine ."
-                }
+
+                sh '''
+                  echo "$DOCKER_USER_PSW" | docker login -u "$DOCKER_USER_USR" --password-stdin || true
+                  # Use lowercase name for Docker image/tag
+                  docker build -t $DOCKER_USER_USR/student-management:alpine .
+                  # To push later, uncomment:
+                  # docker push $DOCKER_USER_USR/student-management:alpine
+                '''
             }
         }
 
-
-        stage('SonarQube') {
-          steps {
-            withSonarQubeEnv('MySonar') {
-              sh 'mvn -B sonar:sonar -Dsonar.projectKey=student-management -Dsonar.projectName="Student Management"'
-            }
-          }
-        }
-
-
-
-        stage("Start app and db") {
+        stage('SonarQube Analysis') {
             steps {
-                sh "docker-compose up -d"
+
+                sh '''
+                  mvn -B sonar:sonar \
+                    -Dsonar.projectKey=student-management \
+                    -Dsonar.projectName="Student Management" \
+                    -Dsonar.host.url=http://192.168.33.10:9000 \
+                    -Dsonar.login=${SONARQUBE_CREDENTIALS}
+                '''
             }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'target/*.jar', onlyIfSuccessful: false
         }
     }
 }
